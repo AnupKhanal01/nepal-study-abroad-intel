@@ -1,0 +1,1032 @@
+<title>Recruitment Ledger</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#eef1ee;
+    --surface:#ffffff;
+    --surface-2:#e2e8e1;
+    --border:#cfd6cc;
+    --ink:#16211c;
+    --ink-muted:#57655c;
+    --accent:#14524a;
+    --accent-strong:#0d3a34;
+    --accent-contrast:#f4f7f2;
+    --gold:#a1721f;
+    --good-bg:#e4f2e7; --good:#1f7a45;
+    --warn-bg:#faf1de; --warn:#a06a12;
+    --bad-bg:#fbe9e5; --bad:#a23a26;
+    --font-display:"Fraunces", Georgia, "Times New Roman", serif;
+    --font-body:"Public Sans", -apple-system, "Segoe UI", sans-serif;
+    --font-mono:"IBM Plex Mono", "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1815;
+      --surface:#16211d;
+      --surface-2:#1c2a24;
+      --border:#2a3a33;
+      --ink:#e7ece7;
+      --ink-muted:#9fb0a6;
+      --accent:#4fb79f;
+      --accent-strong:#7fd1bb;
+      --accent-contrast:#06120f;
+      --gold:#d9a94a;
+      --good-bg:#163524; --good:#79dda0;
+      --warn-bg:#3a2f14; --warn:#e6b95d;
+      --bad-bg:#3a1a14; --bad:#ef8f76;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1815;
+    --surface:#16211d;
+    --surface-2:#1c2a24;
+    --border:#2a3a33;
+    --ink:#e7ece7;
+    --ink-muted:#9fb0a6;
+    --accent:#4fb79f;
+    --accent-strong:#7fd1bb;
+    --accent-contrast:#06120f;
+    --gold:#d9a94a;
+    --good-bg:#163524; --good:#79dda0;
+    --warn-bg:#3a2f14; --warn:#e6b95d;
+    --bad-bg:#3a1a14; --bad:#ef8f76;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.5;
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0;}
+  a{color:var(--accent-strong);}
+  button, select, input, textarea{font-family:inherit; font-size:inherit; color:inherit;}
+  :focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    background:var(--accent-strong);
+    color:var(--accent-contrast);
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    gap:22px;
+    flex-wrap:wrap;
+    position:sticky;
+    top:0;
+    z-index:20;
+  }
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand-mark{
+    width:30px; height:30px;
+    border:2px solid var(--gold);
+    border-radius:2px;
+    position:relative;
+    flex:none;
+  }
+  .brand-mark::before{
+    content:"";
+    position:absolute; inset:4px;
+    border:1px solid var(--gold);
+    border-radius:1px;
+  }
+  .brand-text h1{font-size:19px; color:var(--accent-contrast); letter-spacing:.2px;}
+  .brand-text p{margin:0; font-size:11.5px; color:var(--gold); text-transform:uppercase; letter-spacing:.09em;}
+  .tabs{display:flex; gap:4px; margin-left:auto; flex-wrap:wrap;}
+  .tab-btn{
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--accent-contrast);
+    opacity:.72;
+    padding:8px 14px;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:13.5px;
+  }
+  .tab-btn:hover{opacity:1;}
+  .tab-btn[aria-selected="true"]{
+    opacity:1;
+    background:rgba(244,247,242,0.12);
+    border-color:rgba(244,247,242,0.25);
+  }
+
+  main{max-width:1160px; margin:0 auto; padding:28px 20px 80px;}
+  .panel-head{margin-bottom:22px;}
+  .panel-head h2{font-size:24px;}
+  .panel-head p{margin:6px 0 0; color:var(--ink-muted); max-width:62ch;}
+  .eyebrow{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--gold); font-weight:600; margin:0 0 4px;
+  }
+
+  .mode-banner{
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:6px;
+    padding:10px 14px;
+    font-size:13px;
+    color:var(--ink-muted);
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .mode-dot{width:8px; height:8px; border-radius:50%; background:var(--good); flex:none;}
+  .mode-banner.local .mode-dot{background:var(--warn);}
+
+  /* ---------- form ---------- */
+  #captureForm{max-width:740px;}
+  fieldset{
+    border:1px solid var(--border);
+    background:var(--surface);
+    border-radius:8px;
+    padding:18px 20px 20px;
+    margin:0 0 18px;
+  }
+  legend{
+    font-family:var(--font-display);
+    font-size:15px;
+    font-weight:600;
+    padding:0 6px;
+    color:var(--accent-strong);
+  }
+  .field-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 16px;}
+  .field-grid .span-2{grid-column:1 / -1;}
+  label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-muted); margin-bottom:5px;}
+  label .req{color:var(--bad);}
+  input[type=text], input[type=date], select, textarea{
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--border);
+    border-radius:5px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  textarea{resize:vertical; min-height:64px;}
+  .form-actions{display:flex; align-items:center; gap:12px; margin-top:4px;}
+  .btn{
+    border:none;
+    border-radius:6px;
+    padding:10px 18px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--accent); color:var(--accent-contrast);}
+  .btn-primary:hover{background:var(--accent-strong);}
+  .btn-ghost{background:transparent; border:1px solid var(--border); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--accent);}
+  .btn-sm{padding:5px 10px; font-size:12px; border-radius:5px;}
+  .form-hint{font-size:12px; color:var(--ink-muted);}
+
+  /* ---------- stats ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .stat-tile{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .stat-tile .n{font-family:var(--font-mono); font-size:26px; font-weight:500; font-variant-numeric:tabular-nums;}
+  .stat-tile .l{font-size:11.5px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.07em; margin-top:2px;}
+
+  /* ---------- filter bar ---------- */
+  .filter-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:flex-end;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:16px;
+  }
+  .filter-field{display:flex; flex-direction:column; gap:4px;}
+  .filter-field label{margin:0;}
+  .filter-field select, .filter-field input{padding:7px 9px; min-width:130px;}
+  .filter-field.grow{flex:1; min-width:180px;}
+  .filter-field.grow input{min-width:0; width:100%;}
+  .filter-check{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-muted); padding-bottom:8px;}
+  .filter-spacer{flex:1;}
+
+  /* ---------- table ---------- */
+  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:8px; background:var(--surface);}
+  table{border-collapse:collapse; width:100%; min-width:920px;}
+  thead th{
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-muted);
+    background:var(--surface-2);
+    padding:10px 12px;
+    position:sticky; top:0;
+    border-bottom:1px solid var(--border);
+  }
+  tbody td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+    font-size:13.5px;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  .cell-mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12.5px;}
+  .uni-name{font-weight:600;}
+  .uni-program{color:var(--ink-muted); font-size:12.5px; margin-top:1px;}
+  .example-flag{
+    display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--gold); border:1px dashed var(--gold);
+    border-radius:3px; padding:1px 5px; margin-left:6px; vertical-align:middle;
+  }
+  .pill{
+    display:inline-block; padding:3px 9px; border-radius:20px; font-size:11.5px; font-weight:600;
+    border:none; cursor:pointer;
+  }
+  .pill-draft{background:var(--warn-bg); color:var(--warn);}
+  .pill-verified{background:var(--good-bg); color:var(--good);}
+  .pill-outdated{background:var(--bad-bg); color:var(--bad);}
+  .deadline-soon{color:var(--bad); font-weight:600;}
+  .row-actions{display:flex; gap:6px;}
+  .empty-row td{padding:36px 12px; text-align:center; color:var(--ink-muted);}
+
+  /* ---------- immigration rules ---------- */
+  .region-jump{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px;}
+  .region-jump a{
+    border:1px solid var(--border);
+    background:var(--surface);
+    padding:6px 13px;
+    border-radius:20px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    text-decoration:none;
+  }
+  .region-jump a:hover{border-color:var(--accent); color:var(--accent-strong);}
+  .region-block{margin-bottom:30px; scroll-margin-top:80px;}
+  .region-block > h3{font-size:20px; margin-bottom:12px; color:var(--accent-strong);}
+  .country-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  details.country-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:0;
+  }
+  details.country-card summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 16px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+  }
+  details.country-card summary::-webkit-details-marker{display:none;}
+  .country-name{font-family:var(--font-display); font-weight:600; font-size:16px;}
+  .country-meta{font-size:11.5px; color:var(--ink-muted); font-family:var(--font-mono);}
+  .country-body{padding:0 16px 16px; border-top:1px solid var(--border);}
+  .rule-section{margin-top:12px;}
+  .rule-section h4{
+    font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--gold); margin:0 0 5px;
+  }
+  .rule-section ul{margin:0; padding-left:18px;}
+  .rule-section li{margin-bottom:3px; font-size:13px;}
+  .to-verify{color:var(--warn);}
+  .to-verify::after{content:" — verify"; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--warn); opacity:.85;}
+  .sources-line{font-size:11.5px; color:var(--ink-muted); margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    background:var(--accent-strong); color:var(--accent-contrast);
+    padding:10px 18px; border-radius:6px; font-size:13.5px; z-index:50;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+  }
+
+  @media (max-width:760px){
+    .field-grid{grid-template-columns:1fr;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .country-grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .panel{animation:fade .18s ease-out;}
+    @keyframes fade{from{opacity:.4} to{opacity:1}}
+  }
+</style>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true"></div>
+    <div class="brand-text">
+      <h1>Recruitment Ledger</h1>
+      <p>Nepal &rarr; abroad intake tracker</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab-btn" role="tab" aria-selected="true" data-tab="capture">Capture</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="kb">Knowledge Base</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="rules">Immigration Rules</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ================= CAPTURE ================= -->
+  <section id="panel-capture" class="panel">
+    <div class="panel-head">
+      <p class="eyebrow">New capture</p>
+      <h2>Log a promo post</h2>
+      <p>Whenever AECC, AHZ, NEXT, ALFABETA, EXPERT, REALDREAM, FRANKLIN or another agency posts a university offer, log it here. One entry per university/program — a carousel post advertising four universities becomes four entries. Everything saves as <strong>Draft</strong> until someone verifies it against the university's own materials.</p>
+    </div>
+    <div id="captureModeBanner" class="mode-banner"><span class="mode-dot"></span><span id="captureModeText">Checking sync status&hellip;</span></div>
+
+    <form id="captureForm"></form>
+  </section>
+
+  <!-- ================= KNOWLEDGE BASE ================= -->
+  <section id="panel-kb" class="panel" hidden>
+    <div class="panel-head">
+      <p class="eyebrow">Master workbook</p>
+      <h2>Knowledge base</h2>
+      <p>One row per university/program offer. Sort, filter, and move rows from Draft to Verified once you've checked the figures.</p>
+    </div>
+    <div id="kbModeBanner" class="mode-banner"><span class="mode-dot"></span><span id="kbModeText">Checking sync status&hellip;</span></div>
+
+    <div class="stats" id="statTiles"></div>
+
+    <div class="filter-bar">
+      <div class="filter-field grow">
+        <label for="fSearch">Search</label>
+        <input type="text" id="fSearch" placeholder="University, country, program&hellip;">
+      </div>
+      <div class="filter-field">
+        <label for="fAgency">Agency</label>
+        <select id="fAgency"></select>
+      </div>
+      <div class="filter-field">
+        <label for="fRegion">Region</label>
+        <select id="fRegion"></select>
+      </div>
+      <div class="filter-field">
+        <label for="fIntake">Intake</label>
+        <select id="fIntake"></select>
+      </div>
+      <div class="filter-field">
+        <label for="fStatus">Status</label>
+        <select id="fStatus"></select>
+      </div>
+      <div class="filter-field">
+        <label for="fSort">Sort by</label>
+        <select id="fSort">
+          <option value="deadline">Deadline (soonest)</option>
+          <option value="recent">Recently captured</option>
+          <option value="uni">University A&ndash;Z</option>
+        </select>
+      </div>
+      <label class="filter-check"><input type="checkbox" id="fHideExamples"> Hide example rows</label>
+      <div class="filter-spacer"></div>
+      <button class="btn btn-ghost btn-sm" id="btnClearExamples" type="button">Clear example rows</button>
+      <button class="btn btn-ghost btn-sm" id="btnCopyCsv" type="button">Copy as CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>University / program</th>
+            <th>Agency</th>
+            <th>Destination</th>
+            <th>Intake</th>
+            <th>Deadline</th>
+            <th>Deposit</th>
+            <th>English req.</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="offersTbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= IMMIGRATION RULES ================= -->
+  <section id="panel-rules" class="panel" hidden>
+    <div class="panel-head">
+      <p class="eyebrow">Reference, not agency claims</p>
+      <h2>Immigration rules by destination</h2>
+      <p>Use this to fact-check what an agency posts, not the other way around. Anything marked <span class="to-verify">TO VERIFY</span> changes often enough (financial thresholds, work-hour caps, post-study-work eligibility) that this ledger deliberately doesn't assert a number without a fresh check against the official source at the bottom of each card.</p>
+    </div>
+    <div class="region-jump" id="regionJump"></div>
+    <div id="rulesContainer"></div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- schema ---------------- */
+  var AGENCIES = ["AECC","AHZ","NEXT","ALFABETA","EXPERT","REALDREAM","FRANKLIN","OTHER"];
+  var REGIONS = ["Europe","Asia","Australia/Oceania","North America"];
+  var INTAKES = ["Jan 2027","Apr 2027","Sep 2027","Jan 2028","Other"];
+  var LEVELS = ["Foundation","Diploma","Bachelor","Master","PhD","Pathway/Bridging"];
+  var STATUSES = ["draft","verified","outdated"];
+
+  var FIELDS = [
+    {key:"sourceAgency", label:"Agency", type:"select", options:AGENCIES, group:"source", required:true},
+    {key:"sourcePostRef", label:"Post link or description", type:"text", group:"source", placeholder:"facebook.com/... or \"IG story, 13 Sep\""},
+    {key:"sourcePostDate", label:"Date agency posted it", type:"date", group:"source"},
+    {key:"capturedBy", label:"Captured by", type:"text", group:"source", placeholder:"Your name"},
+
+    {key:"universityName", label:"University", type:"text", group:"program", required:true},
+    {key:"country", label:"Country", type:"text", group:"program", required:true, placeholder:"e.g. United Kingdom"},
+    {key:"region", label:"Region", type:"select", options:REGIONS, group:"program", required:true},
+    {key:"cityLocation", label:"City / campus", type:"text", group:"program"},
+    {key:"programName", label:"Program / course", type:"text", group:"program"},
+    {key:"level", label:"Level", type:"select", options:LEVELS, group:"program"},
+    {key:"intake", label:"Target intake", type:"select", options:INTAKES, group:"program", required:true},
+
+    {key:"academicRequirement", label:"Academic requirement", type:"text", group:"requirements", placeholder:"e.g. 2.8 CGPA or 55%+"},
+    {key:"englishRequirement", label:"English requirement", type:"text", group:"requirements", placeholder:"e.g. IELTS 6.5, no band below 6.0"},
+    {key:"interviewCondition", label:"Interview condition", type:"text", group:"requirements", placeholder:"e.g. Online interview, ~15 min"},
+
+    {key:"initialDeposit", label:"Initial deposit", type:"text", group:"money"},
+    {key:"applicationCharge", label:"Application charge", type:"text", group:"money"},
+    {key:"insuranceCostEstimate", label:"Insurance cost estimate", type:"text", group:"money"},
+    {key:"travelCostEstimate", label:"Travel cost estimate", type:"text", group:"money"},
+    {key:"costOfLivingEstimate", label:"Cost of living estimate", type:"text", group:"money"},
+    {key:"bankingIncomeRequirement", label:"Banking / income requirement", type:"text", group:"money", extraClass:"span-2"},
+
+    {key:"processDuration", label:"Process duration", type:"text", group:"process", placeholder:"e.g. 6-8 weeks"},
+    {key:"applicationDeadline", label:"Application deadline", type:"date", group:"process"},
+    {key:"visaRequirementNotes", label:"Visa requirement notes", type:"text", group:"process", extraClass:"span-2"},
+    {key:"otherDetails", label:"Other details", type:"textarea", group:"process", extraClass:"span-2"}
+  ];
+
+  var GROUPS = [
+    {id:"source", title:"Source"},
+    {id:"program", title:"University & program"},
+    {id:"requirements", title:"Requirements"},
+    {id:"money", title:"Costs & money"},
+    {id:"process", title:"Process"}
+  ];
+
+  /* ---------------- tiny helpers ---------------- */
+  function el(tag, attrs, children){
+    var e = document.createElement(tag);
+    attrs = attrs || {};
+    for (var k in attrs){
+      if (k === "class") e.className = attrs[k];
+      else if (k === "html") e.innerHTML = attrs[k];
+      else if (k === "text") e.textContent = attrs[k];
+      else e.setAttribute(k, attrs[k]);
+    }
+    (children || []).forEach(function(c){ if (c) e.appendChild(c); });
+    return e;
+  }
+  function optionEl(value, label){
+    var o = document.createElement("option");
+    o.value = value; o.textContent = label;
+    return o;
+  }
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(function(){ t.hidden = true; }, 2600);
+  }
+  function safeLocalGet(key, fallback){
+    try { var v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); }
+    catch (e) { return fallback; }
+  }
+  function safeLocalSet(key, val){
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+  }
+  function escapeHtml(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  /* ---------------- tabs ---------------- */
+  document.querySelectorAll(".tab-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".tab-btn").forEach(function(b){ b.setAttribute("aria-selected", b === btn ? "true" : "false"); });
+      ["capture","kb","rules"].forEach(function(name){
+        document.getElementById("panel-" + name).hidden = (name !== btn.dataset.tab);
+      });
+    });
+  });
+
+  /* ---------------- build capture form ---------------- */
+  var form = document.getElementById("captureForm");
+  GROUPS.forEach(function(group){
+    var fs = el("fieldset", {}, [el("legend", {text: group.title})]);
+    var grid = el("div", {class:"field-grid"});
+    FIELDS.filter(function(f){ return f.group === group.id; }).forEach(function(f){
+      var wrap = el("div", {class: f.extraClass || ""});
+      var labelText = f.label + (f.required ? " " : "");
+      var label = el("label", {for: "f_" + f.key});
+      label.textContent = f.label;
+      if (f.required){ var req = el("span",{class:"req",text:" *"}); label.appendChild(req); }
+      wrap.appendChild(label);
+      var input;
+      if (f.type === "select"){
+        input = el("select", {id:"f_" + f.key, name:f.key});
+        input.appendChild(optionEl("", "Select…"));
+        f.options.forEach(function(opt){ input.appendChild(optionEl(opt, opt)); });
+      } else if (f.type === "textarea"){
+        input = el("textarea", {id:"f_" + f.key, name:f.key, rows:"3"});
+        if (f.placeholder) input.setAttribute("placeholder", f.placeholder);
+      } else {
+        input = el("input", {id:"f_" + f.key, name:f.key, type:f.type});
+        if (f.placeholder) input.setAttribute("placeholder", f.placeholder);
+      }
+      if (f.required) input.required = true;
+      wrap.appendChild(input);
+      grid.appendChild(wrap);
+    });
+    fs.appendChild(grid);
+    form.appendChild(fs);
+  });
+  var actions = el("div", {class:"form-actions"}, [
+    el("button", {type:"submit", class:"btn btn-primary", text:"Save entry"}),
+    el("span", {class:"form-hint", text:"New entries always start as Draft."})
+  ]);
+  form.appendChild(actions);
+
+  // prefill remembered agency/name
+  var remembered = safeLocalGet("nsai_prefill", {});
+  if (remembered.sourceAgency) form.querySelector("#f_sourceAgency").value = remembered.sourceAgency;
+  if (remembered.capturedBy) form.querySelector("#f_capturedBy").value = remembered.capturedBy;
+
+  form.addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var data = {};
+    FIELDS.forEach(function(f){ data[f.key] = form.querySelector("#f_" + f.key).value.trim(); });
+    if (!data.universityName || !data.country || !data.sourceAgency || !data.region || !data.intake){
+      showToast("Fill in Agency, University, Country, Region, and Intake at least.");
+      return;
+    }
+    safeLocalSet("nsai_prefill", {sourceAgency:data.sourceAgency, capturedBy:data.capturedBy});
+    addOffer(data).then(function(){
+      showToast("Saved — entry added as Draft.");
+      FIELDS.forEach(function(f){
+        if (f.key === "sourceAgency" || f.key === "capturedBy") return;
+        var node = form.querySelector("#f_" + f.key);
+        node.value = "";
+      });
+    }).catch(function(err){
+      console.error(err);
+      showToast("Could not save that entry — try again.");
+    });
+  });
+
+  /* ---------------- filter controls ---------------- */
+  function fillSelect(id, values, allLabel){
+    var sel = document.getElementById(id);
+    sel.appendChild(optionEl("", allLabel));
+    values.forEach(function(v){ sel.appendChild(optionEl(v, v)); });
+  }
+  fillSelect("fAgency", AGENCIES, "All agencies");
+  fillSelect("fRegion", REGIONS, "All regions");
+  fillSelect("fIntake", INTAKES, "All intakes");
+  fillSelect("fStatus", STATUSES, "All statuses");
+  ["fSearch","fAgency","fRegion","fIntake","fStatus","fSort","fHideExamples"].forEach(function(id){
+    document.getElementById(id).addEventListener("input", renderTable);
+    document.getElementById(id).addEventListener("change", renderTable);
+  });
+
+  /* ---------------- data store: db capability with localStorage fallback ---------------- */
+  var storeMode = null; // "db" | "local"
+  var offersCol = null;
+  var allOffers = [];
+  var LOCAL_KEY = "nsai_offers_v1";
+
+  function localList(){ return safeLocalGet(LOCAL_KEY, []); }
+  function localSave(list){ safeLocalSet(LOCAL_KEY, list); }
+
+  function setModeBanner(mode){
+    var text = mode === "db"
+      ? "Synced — everyone with this link sees the same knowledge base."
+      : "Local-only — live sync isn't available in this view, so entries save only in this browser.";
+    [["captureModeBanner","captureModeText"], ["kbModeBanner","kbModeText"]].forEach(function(pair){
+      document.getElementById(pair[0]).classList.toggle("local", mode !== "db");
+      document.getElementById(pair[1]).textContent = text;
+    });
+  }
+
+  function addOffer(data){
+    if (storeMode === "db"){
+      var body = {};
+      FIELDS.forEach(function(f){ body[f.key] = data[f.key] || ""; });
+      body.status = "draft";
+      body.isExample = false;
+      body.createdAt = Date.now();
+      return offersCol.add(body);
+    }
+    var list = localList();
+    var row = Object.assign({id: "local-" + Date.now() + "-" + Math.random().toString(36).slice(2)}, data, {status:"draft", isExample:false, createdAt: Date.now()});
+    list.unshift(row);
+    localSave(list);
+    allOffers = list;
+    renderTable();
+    return Promise.resolve();
+  }
+
+  function updateOfferStatus(id, status){
+    if (storeMode === "db"){
+      return offersCol.doc(id).update({status: status});
+    }
+    var list = localList();
+    var row = list.find(function(r){ return r.id === id; });
+    if (row){ row.status = status; localSave(list); allOffers = list; renderTable(); }
+    return Promise.resolve();
+  }
+
+  function deleteOffer(id){
+    if (storeMode === "db"){
+      return offersCol.doc(id).delete();
+    }
+    var list = localList().filter(function(r){ return r.id !== id; });
+    localSave(list);
+    allOffers = list;
+    renderTable();
+    return Promise.resolve();
+  }
+
+  function clearExamples(){
+    var examples = allOffers.filter(function(o){ return o.isExample; });
+    if (!examples.length){ showToast("No example rows to clear."); return; }
+    Promise.all(examples.map(function(o){ return deleteOffer(o.id); })).then(function(){
+      showToast("Cleared " + examples.length + " example row(s).");
+    });
+  }
+
+  async function initStore(){
+    var db = null;
+    try { db = await claude.use("db"); } catch (e) { db = null; }
+    if (db){
+      storeMode = "db";
+      offersCol = db.collection("offers");
+      setModeBanner("db");
+      offersCol.orderBy("createdAt", "desc").limit(1000).onSnapshot(function(snap){
+        allOffers = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+        renderTable();
+      }, function(err){
+        console.error(err);
+        showToast("Lost connection to the shared knowledge base.");
+      });
+    } else {
+      storeMode = "local";
+      allOffers = localList();
+      setModeBanner("local");
+      renderTable();
+    }
+  }
+  initStore();
+
+  /* ---------------- stats + table rendering ---------------- */
+  function daysUntil(dateStr){
+    if (!dateStr) return null;
+    var d = new Date(dateStr + "T00:00:00");
+    if (isNaN(d.getTime())) return null;
+    return Math.round((d.getTime() - Date.now()) / 86400000);
+  }
+
+  function renderStats(){
+    var real = allOffers.filter(function(o){ return !o.isExample; });
+    var verified = real.filter(function(o){ return o.status === "verified"; }).length;
+    var dueSoon = real.filter(function(o){
+      var d = daysUntil(o.applicationDeadline);
+      return d !== null && d >= 0 && d <= 45 && o.status !== "outdated";
+    }).length;
+    var regions = new Set(real.map(function(o){ return o.region; }).filter(Boolean));
+    var tiles = [
+      ["Entries tracked", real.length],
+      ["Verified", verified],
+      ["Deadlines ≤ 45 days", dueSoon],
+      ["Regions covered", regions.size]
+    ];
+    var host = document.getElementById("statTiles");
+    host.innerHTML = "";
+    tiles.forEach(function(t){
+      host.appendChild(el("div", {class:"stat-tile"}, [
+        el("div", {class:"n", text:String(t[1])}),
+        el("div", {class:"l", text:t[0]})
+      ]));
+    });
+  }
+
+  function matchesFilters(o){
+    var search = document.getElementById("fSearch").value.trim().toLowerCase();
+    var agency = document.getElementById("fAgency").value;
+    var region = document.getElementById("fRegion").value;
+    var intake = document.getElementById("fIntake").value;
+    var status = document.getElementById("fStatus").value;
+    var hideExamples = document.getElementById("fHideExamples").checked;
+    if (hideExamples && o.isExample) return false;
+    if (agency && o.sourceAgency !== agency) return false;
+    if (region && o.region !== region) return false;
+    if (intake && o.intake !== intake) return false;
+    if (status && o.status !== status) return false;
+    if (search){
+      var hay = [o.universityName, o.country, o.programName, o.cityLocation].join(" ").toLowerCase();
+      if (hay.indexOf(search) === -1) return false;
+    }
+    return true;
+  }
+
+  function sortOffers(list){
+    var mode = document.getElementById("fSort").value;
+    var copy = list.slice();
+    if (mode === "uni"){
+      copy.sort(function(a,b){ return (a.universityName||"").localeCompare(b.universityName||""); });
+    } else if (mode === "recent"){
+      copy.sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+    } else {
+      copy.sort(function(a,b){
+        var da = a.applicationDeadline || "9999-99-99";
+        var db_ = b.applicationDeadline || "9999-99-99";
+        return da.localeCompare(db_);
+      });
+    }
+    return copy;
+  }
+
+  function pillFor(status){
+    var cls = status === "verified" ? "pill-verified" : (status === "outdated" ? "pill-outdated" : "pill-draft");
+    return {cls: cls, label: status ? (status.charAt(0).toUpperCase() + status.slice(1)) : "Draft"};
+  }
+
+  function renderTable(){
+    renderStats();
+    var tbody = document.getElementById("offersTbody");
+    tbody.innerHTML = "";
+    var filtered = sortOffers(allOffers.filter(matchesFilters));
+
+    if (!filtered.length){
+      tbody.appendChild(el("tr", {class:"empty-row"}, [
+        el("td", {colspan:"9", text: allOffers.length ? "No entries match these filters." : "No entries yet — log your first capture on the Capture tab."})
+      ]));
+      return;
+    }
+
+    filtered.forEach(function(o){
+      var tr = document.createElement("tr");
+
+      var uniCell = el("td", {}, [
+        el("div", {class:"uni-name"}, [
+          document.createTextNode(o.universityName || "(untitled)"),
+          o.isExample ? el("span", {class:"example-flag", text:"Example"}) : null
+        ]),
+        el("div", {class:"uni-program", text: o.programName || o.level || ""})
+      ]);
+
+      var destCell = el("td", {}, [
+        el("div", {text: o.country || "—"}),
+        el("div", {class:"uni-program", text: [o.cityLocation, o.region].filter(Boolean).join(" · ")})
+      ]);
+
+      var deadline = o.applicationDeadline || "";
+      var d = daysUntil(deadline);
+      var deadlineCell = el("td", {class:"cell-mono" + ((d !== null && d >= 0 && d <= 45) ? " deadline-soon" : "")}, [
+        document.createTextNode(deadline || "—")
+      ]);
+
+      var pill = pillFor(o.status);
+      var pillBtn = el("button", {class:"pill " + pill.cls, type:"button", title:"Click to change status"});
+      pillBtn.textContent = pill.label;
+      pillBtn.addEventListener("click", function(){
+        var next = o.status === "draft" ? "verified" : (o.status === "verified" ? "outdated" : "draft");
+        updateOfferStatus(o.id, next).then(function(){ showToast("Marked as " + next + "."); });
+      });
+
+      var delBtn = el("button", {class:"btn btn-ghost btn-sm", type:"button", text:"Remove"});
+      delBtn.addEventListener("click", function(){
+        if (confirm("Remove this entry? This can't be undone.")) deleteOffer(o.id);
+      });
+
+      tr.appendChild(uniCell);
+      tr.appendChild(el("td", {text: o.sourceAgency || "—"}));
+      tr.appendChild(destCell);
+      tr.appendChild(el("td", {text: o.intake || "—"}));
+      tr.appendChild(deadlineCell);
+      tr.appendChild(el("td", {class:"cell-mono", text: o.initialDeposit || "—"}));
+      tr.appendChild(el("td", {text: o.englishRequirement || "—"}));
+      tr.appendChild(el("td", {}, [pillBtn]));
+      tr.appendChild(el("td", {class:"row-actions"}, [delBtn]));
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("btnCopyCsv").addEventListener("click", function(){
+    var filtered = sortOffers(allOffers.filter(matchesFilters));
+    if (!filtered.length){ showToast("Nothing to copy."); return; }
+    var cols = ["universityName","sourceAgency","country","region","cityLocation","programName","level","intake","academicRequirement","englishRequirement","interviewCondition","initialDeposit","applicationCharge","processDuration","visaRequirementNotes","insuranceCostEstimate","travelCostEstimate","costOfLivingEstimate","bankingIncomeRequirement","applicationDeadline","status","otherDetails"];
+    var lines = [cols.join(",")];
+    filtered.forEach(function(o){
+      lines.push(cols.map(function(c){
+        var v = (o[c] == null ? "" : String(o[c])).replace(/"/g, '""');
+        return /[",\n]/.test(v) ? ('"' + v + '"') : v;
+      }).join(","));
+    });
+    var csv = lines.join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(csv).then(function(){
+        showToast("Copied " + filtered.length + " row(s) as CSV.");
+      }).catch(function(){ showToast("Couldn't access the clipboard here."); });
+    } else {
+      showToast("Clipboard isn't available in this view.");
+    }
+  });
+
+  document.getElementById("btnClearExamples").addEventListener("click", function(){
+    if (confirm("Remove all example rows? This can't be undone.")) clearExamples();
+  });
+
+  /* ---------------- immigration rules content ---------------- */
+  var RULES = [
+    {region:"Europe", countries:[
+      {name:"United Kingdom", visa:"Student visa", authority:"UK Visas & Immigration — gov.uk", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Set by the university; no separate government academic bar beyond a valid, unconditional offer confirmed via CAS."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0 (bachelor's) to ~6.5 (master's).","UKVI itself requires CEFR B2+ evidence unless exempt."],
+          "Financial / bank":["TOVERIFY:Maintenance funds — tuition balance plus a fixed monthly living-cost figure (London vs outside-London rates differ), held 28 consecutive days."],
+          "Insurance":["TOVERIFY:Immigration Health Surcharge (IHS), paid with the visa application per year of stay."],
+          "Process":["CAS from the university required before applying.","Some STEM/postgrad-research subjects need ATAS clearance.","TOVERIFY:Processing time and visa fee."],
+          "Work rights":["TOVERIFY:Typically up to 20 hrs/week in term, full-time in scheduled vacations."],
+          "Post-study work":["TOVERIFY:Graduate Route — historically 2 years (3 for PhD) after study."],
+          "Dependents":["Since a 2024 tightening, most taught master's students cannot bring dependents; PhD/research and government-sponsored scholars generally still can. TOVERIFY:current rule."],
+          "Jan/Apr 2027 notes":["UK student-visa policy on dependents, Graduate Route length, and post-study salary thresholds has changed repeatedly — re-check before every intake."]
+        }, sources:"gov.uk (Home Office / UKVI)"},
+      {name:"Ireland", visa:"Stamp 2 study permission", authority:"Irish Immigration Service Delivery", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Institution-set; course must be on the interim eligible-programs list (ILEP) for non-EEA students at private colleges."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0–6.5."],
+          "Financial / bank":["TOVERIFY:Funds to cover fees plus living costs; private colleges must hold Learner Protection (fee) insurance."],
+          "Insurance":["TOVERIFY:Mandatory private medical insurance for the stay."],
+          "Process":["\"D\" visa (if required) then registration for the residence permission card after arrival.","TOVERIFY:processing time and fee."],
+          "Work rights":["TOVERIFY:Typically up to 20 hrs/week in term, 40 hrs/week in official college holidays."],
+          "Post-study work":["TOVERIFY:Third Level Graduate Programme (Stamp 1G) — historically ~1 year (Level 8) to 2 years (Level 9+)."],
+          "Dependents":["Not a standard feature of the taught-program route; TOVERIFY for research/PhD candidates."],
+          "Jan/Apr 2027 notes":["Confirm the specific program is still ILEP-listed close to application time — the list changes."]
+        }, sources:"irishimmigration.ie"},
+      {name:"Germany", visa:"National (Type D) then residence permit for study", authority:"Federal Foreign Office / local Ausländerbehörde", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Assessed per-university, often via uni-assist; may include a Studienkolleg foundation year."],
+          "English requirement":["English-taught programs: institution-set (~IELTS 6.0–6.5). German-taught: DSH/TestDaF or Studienkolleg pathway."],
+          "Financial / bank":["TOVERIFY:Blocked account (Sperrkonto) — fixed monthly amount set annually by the Federal Foreign Office; this figure changes yearly, do not reuse an old number."],
+          "Insurance":["TOVERIFY:Mandatory statutory (or private) health insurance to enrol."],
+          "Process":["Type D visa at the mission, then Anmeldung + residence permit locally.","TOVERIFY:processing time and fee."],
+          "Work rights":["TOVERIFY:Non-EU cap generally 140 full days / 280 half days per year (~20 hrs/week average)."],
+          "Post-study work":["TOVERIFY:18-month job-seeker residence permit is the common benchmark, convertible once employed."],
+          "Dependents":["Possible in some cases with own income/housing requirements; uncommon for single students."],
+          "Jan/Apr 2027 notes":["Most public universities intake October and April — confirm the specific semester start and uni-assist deadlines, which often sit months ahead."]
+        }, sources:"Auswärtiges Amt; DAAD (daad.de)"}
+    ]},
+    {region:"Asia", countries:[
+      {name:"Japan", visa:"Student status of residence (via COE)", authority:"Immigration Services Agency of Japan", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Institution/program-set; language schools often require prior hours of Japanese study for some tracks."],
+          "English requirement":["Only relevant for the minority of English-taught degrees; institution-set."],
+          "Financial / bank":["TOVERIFY:Sponsor bank balance / income documents to support the COE application — typical amount varies by school."],
+          "Insurance":["TOVERIFY:National Health Insurance enrolment generally expected on registering residency."],
+          "Process":["Two stages: school applies for a Certificate of Eligibility, then visa at the embassy/consulate using the COE."],
+          "Work rights":["TOVERIFY:Part-time work needs separate permission, typically capped around 28 hrs/week."],
+          "Post-study work":["TOVERIFY:\"Designated Activities\" job-hunting visa, historically up to 1 year, then a work visa once hired."],
+          "Dependents":["Possible under \"Dependent\" status, tied to the sponsor's own status/income."],
+          "Jan/Apr 2027 notes":["April is the main university-year start; many language schools also run January/July intakes — confirm which one an agency post actually means."]
+        }, sources:"isa.go.jp; jasso.go.jp"},
+      {name:"South Korea", visa:"D-2 (degree) / D-4 (language institute)", authority:"Korea Immigration Service / Hi Korea", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["D-2 needs an academic offer; D-4 language institutes generally only need secondary completion."],
+          "English requirement":["Only relevant for English-taught degree tracks; Korean-track pathways build up TOPIK level instead."],
+          "Financial / bank":["TOVERIFY:Bank balance certificate, historically cited around KRW 10 million equivalent, held for a period before applying — confirm current amount and holding period."],
+          "Insurance":["TOVERIFY:National Health Insurance enrolment mandatory beyond a set stay length."],
+          "Process":["Nepal has historically been on Korean immigration's stricter \"essential document verification\" list for D-4 — TOVERIFY:whether this still applies, since it materially affects processing time and refusal risk."],
+          "Work rights":["TOVERIFY:Part-time work needs separate permission; often unavailable in a language student's first ~6 months."],
+          "Post-study work":["TOVERIFY:D-10 job-seeking visa after graduation."],
+          "Dependents":["Generally more limited for D-4 than D-2 students."],
+          "Jan/Apr 2027 notes":["Degree programs usually start March/September; language institutes often run quarterly (roughly Jan/Apr/Jul/Oct) — confirm which one \"Jan 2027\"/\"Apr 2027\" actually refers to, and apply extra scrutiny to any agency's processing-time claim given the extra checks noted above."]
+        }, sources:"hikorea.go.kr"},
+      {name:"Malaysia", visa:"Student Pass", authority:"Immigration Dept. of Malaysia via EMGS", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Institution-set; check MQA accreditation for the specific program."],
+          "English requirement":["Institution-set, commonly IELTS ~5.5–6.5; some offer English foundation pathways."],
+          "Financial / bank":["TOVERIFY:EMGS/immigration require proof of funds for tuition and living costs."],
+          "Insurance":["TOVERIFY:Mandatory EMGS-arranged health coverage scheme for the study duration."],
+          "Process":["Institution submits to EMGS → Visa Approval Letter → Single Entry Visa (if required) → Student Pass endorsed on arrival."],
+          "Work rights":["TOVERIFY:Historically limited to ~20 hrs/week during semester breaks only, with approval — policy has shifted before."],
+          "Post-study work":["Limited compared to UK/Australia/Canada; TOVERIFY:current pass-conversion routes for employed graduates."],
+          "Dependents":["Not a standard feature of the Student Pass route."],
+          "Jan/Apr 2027 notes":["Private institutions often run several intakes a year (Jan/Feb, May, Sep) — confirm the specific institution's calendar rather than assuming a fixed cycle."]
+        }, sources:"educationmalaysia.gov.my"}
+    ]},
+    {region:"Australia/Oceania", countries:[
+      {name:"Australia", visa:"Student visa (subclass 500)", authority:"Department of Home Affairs", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Institution-set; the visa itself centers on the Genuine Student (GS) requirement (replaced the former GTE test)."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0–6.5; higher scores or bridging sometimes required for higher-scrutiny applicants."],
+          "Financial / bank":["TOVERIFY:Annual living-cost figure set by Home Affairs, revised roughly yearly, plus tuition and travel."],
+          "Insurance":["TOVERIFY:Overseas Student Health Cover (OSHC) mandatory for the visa duration."],
+          "Process":["Requires a Confirmation of Enrolment (CoE) and a GS statement.","Home Affairs applies a country/provider risk framework — TOVERIFY:whether any current Ministerial Direction affects processing priority for Nepal-origin applications."],
+          "Work rights":["TOVERIFY:A fortnightly work-hour cap during term has been reinstated and adjusted more than once; unlimited during scheduled breaks."],
+          "Post-study work":["TOVERIFY:Temporary Graduate visa (subclass 485) — duration/eligibility tightened in recent policy rounds."],
+          "Dependents":["Rules on bringing dependents (and their work rights) have been tightened and reversed more than once; TOVERIFY:current policy and whether it depends on course level."],
+          "Jan/Apr 2027 notes":["Australia runs Semester 1 (Feb/Mar) and Semester 2 (Jul) mainly, not a strict Jan/Apr calendar — confirm what an agency's \"Jan/Apr 2027\" claim actually maps to (often a pathway/foundation start)."]
+        }, sources:"homeaffairs.gov.au"},
+      {name:"New Zealand", visa:"Student visa (Pathway option for up to 3 courses)", authority:"Immigration New Zealand", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Institution-set; INZ requires an accredited provider and an Offer of Place."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0+ for degree-level."],
+          "Financial / bank":["TOVERIFY:Living-cost amount set by INZ per month/year, revised periodically, plus tuition."],
+          "Insurance":["TOVERIFY:Mandatory approved medical/travel insurance for the visa duration."],
+          "Process":["Online INZ application with Offer of Place and funds evidence.","TOVERIFY:processing time and fee."],
+          "Work rights":["Now depends on qualification level after 2024 changes — TOVERIFY:current entitlement, since lower-level (non-degree) study may have no or reduced work rights."],
+          "Post-study work":["Post-Study Work Visa eligibility was significantly tightened in 2024, generally now tied to an approved qualification list/level — TOVERIFY:before treating any \"guaranteed work visa\" claim as accurate."],
+          "Dependents":["Depends on qualification level and visa type; more restricted than before the 2024 changes."],
+          "Jan/Apr 2027 notes":["Main academic year starts late Feb/March, with a smaller July intake — confirm what \"Jan/Apr 2027\" refers to. Be especially skeptical of easy-stay-back claims given the 2024 tightening."]
+        }, sources:"immigration.govt.nz"}
+    ]},
+    {region:"North America", countries:[
+      {name:"United States", visa:"F-1", authority:"US Dept. of State (visa) / SEVP (status)", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Government requirement is simply a SEVP-certified school issuing a valid Form I-20; academic bar is institution-set."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0–6.5 or TOEFL equivalent, or a conditional-admission pathway."],
+          "Financial / bank":["Funds must cover the cost of attendance shown on the I-20 (often at least the first year) via savings, sponsor affidavits, or an approved loan — this is program-specific, read it off the I-20 rather than assuming a fixed government figure."],
+          "Insurance":["Not federally mandated, but virtually every institution requires its own (or an approved) health insurance plan as a condition of registration."],
+          "Process":["SEVIS I-901 fee → DS-160 → visa interview at the US Embassy in Kathmandu.","TOVERIFY:current interview wait times at the Kathmandu embassy specifically — this is usually the real bottleneck, more than academic admission."],
+          "Work rights":["On-campus up to 20 hrs/week in term is generally allowed without extra authorization; off-campus needs CPT or OPT specifically — not open part-time work."],
+          "Post-study work":["OPT: typically 12 months post-completion; STEM OPT extension adds up to 24 more months for qualifying STEM degrees from an E-Verify employer — TOVERIFY:current STEM-designated-degree list."],
+          "Dependents":["F-2 dependents allowed but generally cannot work; spouse may study part-time under some conditions."],
+          "Jan/Apr 2027 notes":["US intake is overwhelmingly Fall (Aug/Sep); a smaller Spring (Jan) intake exists, and true \"April\" starts are unusual — double-check any agency claim of an April 2027 US start."]
+        }, sources:"travel.state.gov; Study in the States (ice.gov/sevis)"},
+      {name:"Canada", visa:"Study permit", authority:"Immigration, Refugees and Citizenship Canada (IRCC)", lastVerified:"2026-09-13",
+        sections:{
+          "Entry & academic":["Requires a Letter of Acceptance from a Designated Learning Institution (DLI) — confirm current DLI status, since PGWP eligibility can differ by program even within a DLI."],
+          "English requirement":["Institution-set, commonly IELTS ~6.0–6.5; separately, PGWP eligibility itself now carries its own language-test requirement for certain program types — don't conflate the two."],
+          "Financial / bank":["TOVERIFY:IRCC's minimum financial requirement was raised substantially in Jan 2024 and is indexed periodically — do not reuse a figure seen in an old agency post."],
+          "Insurance":["Provincial health-coverage eligibility for international students varies by province — TOVERIFY per destination province."],
+          "Process":["A Provincial Attestation Letter (PAL) is now generally required as part of the application (introduced 2024) — confirm the institution/program actually has PAL allocation before treating an acceptance as permit-ready."],
+          "Work rights":["TOVERIFY:Off-campus work-hour cap was reinstated in 2024 after being removed during COVID; full-time allowed during scheduled breaks."],
+          "Post-study work":["PGWP eligibility was narrowed significantly since 2024, especially for programs delivered via public-private college partnerships, plus a new language-test requirement — TOVERIFY in detail before repeating any \"guaranteed PGWP\" claim, one of the most commonly oversold points in Canada-focused marketing right now."],
+          "Dependents":["Spousal open work permit eligibility was also tightened in 2024, generally now restricted to spouses of students in specific program types (e.g. master's/doctoral or select professional programs) — TOVERIFY current list."],
+          "Jan/Apr 2027 notes":["Because of the national intake cap and PAL system, not every institution/program has allocation for every intake — ask the agency directly whether a PAL is available for that specific program before a student pays a deposit. This is the highest-churn file in this set; re-check every cycle."]
+        }, sources:"canada.ca/en/immigration-refugees-citizenship"}
+    ]}
+  ];
+
+  var jumpHost = document.getElementById("regionJump");
+  var rulesHost = document.getElementById("rulesContainer");
+
+  RULES.forEach(function(regionData, idx){
+    var anchorId = "region-" + idx;
+    jumpHost.appendChild(el("a", {href:"#" + anchorId, text: regionData.region}));
+
+    var block = el("div", {class:"region-block", id:anchorId}, [
+      el("h3", {text: regionData.region})
+    ]);
+    var grid = el("div", {class:"country-grid"});
+
+    regionData.countries.forEach(function(c){
+      var body = el("div", {class:"country-body"});
+      Object.keys(c.sections).forEach(function(secTitle){
+        var ul = el("ul");
+        c.sections[secTitle].forEach(function(line){
+          var isVerify = line.indexOf("TOVERIFY:") === 0;
+          var text = isVerify ? line.slice(9) : line;
+          ul.appendChild(el("li", {class: isVerify ? "to-verify" : "", text: text}));
+        });
+        body.appendChild(el("div", {class:"rule-section"}, [el("h4", {text: secTitle}), ul]));
+      });
+      body.appendChild(el("div", {class:"sources-line", text: "Last verified " + c.lastVerified + " · Check: " + c.sources}));
+
+      var summary = el("summary", {}, [
+        el("span", {class:"country-name", text:c.name}),
+        el("span", {class:"country-meta", text:c.visa})
+      ]);
+      var card = el("details", {class:"country-card"}, [summary, body]);
+      grid.appendChild(card);
+    });
+
+    block.appendChild(grid);
+    rulesHost.appendChild(block);
+  });
+
+})();
+</script>

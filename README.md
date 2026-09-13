@@ -65,3 +65,12 @@ docs/
 pip install openpyxl
 python scripts/parse_intake.py   # processes anything sitting in data/intake/
 ```
+
+## Web version
+
+`webapp/app.html` is a browser-based version of the same workflow, published as a Claude
+Artifact: a capture form, a live-filterable knowledge base table, and the immigration rules
+reference, all in one page — no Python or Excel required. It stores entries in the artifact's
+own shared database when that's available in the viewer, and falls back to browser-local storage
+(clearly flagged in the page) otherwise. Ask Claude Code to republish `webapp/app.html` after
+editing it locally to push updates live.
