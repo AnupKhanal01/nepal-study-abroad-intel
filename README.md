@@ -68,9 +68,13 @@ python scripts/parse_intake.py   # processes anything sitting in data/intake/
 
 ## Web version
 
-`webapp/app.html` is a browser-based version of the same workflow, published as a Claude
-Artifact: a capture form, a live-filterable knowledge base table, and the immigration rules
-reference, all in one page — no Python or Excel required. It stores entries in the artifact's
-own shared database when that's available in the viewer, and falls back to browser-local storage
-(clearly flagged in the page) otherwise. Ask Claude Code to republish `webapp/app.html` after
-editing it locally to push updates live.
+Two browser-based versions of the same workflow exist — a capture form, a live-filterable
+knowledge base table, and the immigration rules reference, all in one page, no Python or Excel
+required:
+
+- **`webapp/app.html`** — published as a Claude Artifact, with a real shared/live database: every
+  viewer in the organization sees and edits the same knowledge base. Ask Claude Code to republish
+  this file after editing it to push updates live.
+- **`site/index.html`** — a plain static build (deployed to Vercel) for use outside Claude. It has
+  no shared backend: each browser keeps its own entries in local storage, with **Export/Import
+  JSON** buttons on the Knowledge Base tab to back up or hand entries to a teammate manually.
