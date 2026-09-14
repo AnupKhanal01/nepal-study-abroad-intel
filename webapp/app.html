@@ -460,6 +460,7 @@
     {key:"intake", label:"Target intake", type:"select", options:INTAKES, group:"program", required:true},
 
     {key:"academicRequirement", label:"Academic requirement", type:"text", group:"requirements", placeholder:"e.g. 2.8 CGPA or 55%+"},
+    {key:"scholarshipInformation", label:"Scholarship information", type:"text", group:"requirements", placeholder:"e.g. 20% tuition waiver for 80%+ in +2", extraClass:"span-2"},
     {key:"englishRequirement", label:"English requirement", type:"text", group:"requirements", placeholder:"e.g. IELTS 6.5, no band below 6.0"},
     {key:"interviewCondition", label:"Interview condition", type:"text", group:"requirements", placeholder:"e.g. Online interview, ~15 min"},
 
@@ -837,7 +838,7 @@
   document.getElementById("btnCopyCsv").addEventListener("click", function(){
     var filtered = sortOffers(allOffers.filter(matchesFilters));
     if (!filtered.length){ showToast("Nothing to copy."); return; }
-    var cols = ["universityName","sourceAgency","country","region","cityLocation","programName","level","intake","academicRequirement","englishRequirement","interviewCondition","initialDeposit","applicationCharge","processDuration","visaRequirementNotes","insuranceCostEstimate","travelCostEstimate","costOfLivingEstimate","bankingIncomeRequirement","applicationDeadline","status","otherDetails"];
+    var cols = ["universityName","sourceAgency","country","region","cityLocation","programName","level","intake","academicRequirement","scholarshipInformation","englishRequirement","interviewCondition","initialDeposit","applicationCharge","processDuration","visaRequirementNotes","insuranceCostEstimate","travelCostEstimate","costOfLivingEstimate","bankingIncomeRequirement","applicationDeadline","status","otherDetails"];
     var lines = [cols.join(",")];
     filtered.forEach(function(o){
       lines.push(cols.map(function(c){

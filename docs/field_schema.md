@@ -20,6 +20,7 @@ captured from one agency post. Columns, in order:
 | level | Foundation / Diploma / Bachelor / Master / PhD / Pathway. |
 | intake | Target intake — prioritize "Jan 2027" and "Apr 2027". |
 | academic_requirement | Minimum academic qualification (GPA/%/grade). |
+| scholarship_information | Scholarship/fee-waiver availability, amount or %, and eligibility criteria mentioned in the post. |
 | english_requirement | IELTS/PTE/TOEFL/Duolingo score or waiver condition. |
 | interview_condition | Whether an interview (university or visa-focused) is required, and format. |
 | initial_deposit | Deposit required to confirm the offer/CAS/I-20 etc. |

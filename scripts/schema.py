@@ -53,6 +53,7 @@ COLUMNS = [
     "level",
     "intake",
     "academic_requirement",
+    "scholarship_information",
     "english_requirement",
     "interview_condition",
     "initial_deposit",

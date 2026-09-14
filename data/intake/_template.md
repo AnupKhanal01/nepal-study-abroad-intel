@@ -26,6 +26,7 @@ level:
 intake: Jan 2027
 
 academic_requirement:
+scholarship_information:
 english_requirement:
 interview_condition:
 initial_deposit:
